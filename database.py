@@ -3,16 +3,18 @@ import sqlite3
 def init_db():
     conn = sqlite3.connect('expenses.db')
     c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS expenses
-                 (id INTEGER PRIMARY KEY, amount REAL, category TEXT, description TEXT, date TEXT)''')
+    # Drop old table if it exists to avoid schema conflicts
+    c.execute("DROP TABLE IF EXISTS expenses")
+    c.execute('''CREATE TABLE expenses
+                 (id INTEGER PRIMARY KEY, amount REAL, category TEXT, subcategory TEXT, description TEXT, date TEXT)''')
     conn.commit()
     conn.close()
 
-def add_expense(amount, category, description, date):
+def add_expense(amount, category, subcategory, description, date):
     conn = sqlite3.connect('expenses.db')
     c = conn.cursor()
-    c.execute("INSERT INTO expenses (amount, category, description, date) VALUES (?, ?, ?, ?)",
-              (amount, category, description, date))
+    c.execute("INSERT INTO expenses (amount, category, subcategory, description, date) VALUES (?, ?, ?, ?, ?)",
+              (amount, category, subcategory, description, date))
     conn.commit()
     conn.close()
 
@@ -24,6 +26,5 @@ def get_expenses():
     conn.close()
     return expenses
 
-# Initialize the database
 if __name__ == "__main__":
     init_db()

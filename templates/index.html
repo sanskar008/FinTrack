@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>FinTrack App</title>
+    <title>FinTrack</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
       rel="stylesheet"
@@ -113,6 +113,24 @@
             <option value="Food">Food</option>
             <option value="Transport">Transport</option>
             <option value="Entertainment">Entertainment</option>
+            <option value="Education">Education</option>
+            <option value="Other">Other</option>
+          </select>
+          <select name="subcategory" required>
+            <!-- Dynamic based on category, simplified here -->
+            <option value="Fast Food">Fast Food</option>
+            <option value="Groceries">Groceries</option>
+            <option value="Dining Out">Dining Out</option>
+            <option value="Snacks">Snacks</option>
+            <option value="Public Transport">Public Transport</option>
+            <option value="Rideshare">Rideshare</option>
+            <option value="Fuel">Fuel</option>
+            <option value="Movies">Movies</option>
+            <option value="Games">Games</option>
+            <option value="Events">Events</option>
+            <option value="Books">Books</option>
+            <option value="Courses">Courses</option>
+            <option value="Supplies">Supplies</option>
             <option value="Other">Other</option>
           </select>
           <input
@@ -136,8 +154,8 @@
       <ul class="expense-list">
         {% for expense in expenses %}
         <li class="expense-item">
-          {{ expense[3] }} ({{ expense[2] }}): ${{ expense[1] }} on {{
-          expense[4] }}
+          {{ expense[4] }} ({{ expense[2] }} - {{ expense[3] }}): ${{ expense[1]
+          }} on {{ expense[5] }}
         </li>
         {% endfor %}
       </ul>
@@ -151,10 +169,10 @@
 
     <!-- Chart.js Script -->
     <script>
-      const expensesData = {{ expenses|tojson }};
-      const categories = [...new Set(expensesData.map(e => e[2]))];
+      const expenses = {{ expenses|tojson }};
+      const categories = [...new Set(expenses.map(e => e[2] + ' - ' + e[3]))];
       const amounts = categories.map(cat =>
-          expensesData.filter(e => e[2] === cat).reduce((sum, e) => sum + e[1], 0)
+          expenses.filter(e => (e[2] + ' - ' + e[3]) === cat).reduce((sum, e) => sum + e[1], 0)
       );
 
       const ctx = document.getElementById('spendingChart').getContext('2d');
@@ -164,7 +182,7 @@
               labels: categories,
               datasets: [{
                   data: amounts,
-                  backgroundColor: ['#1a73e8', '#34c759', '#ffca28', '#ff5722'],
+                  backgroundColor: ['#1a73e8', '#34c759', '#ffca28', '#ff5722', '#ab47bc', '#26a69a', '#ef5350'],
                   borderWidth: 1
               }]
           },
@@ -172,7 +190,7 @@
               responsive: true,
               plugins: {
                   legend: { position: 'top' },
-                  title: { display: true, text: 'Spending by Category' }
+                  title: { display: true, text: 'Spending by Category & Subcategory' }
               }
           }
       });

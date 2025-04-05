@@ -9,14 +9,15 @@ def index():
     if request.method == 'POST':
         amount = float(request.form['amount'])
         category = request.form['category']
+        subcategory = request.form['subcategory']
         description = request.form['description']
         date = request.form['date']
-        add_expense(amount, category, description, date)
+        add_expense(amount, category, subcategory, description, date)
     
     expenses = get_expenses()
     notifications = analyze_spending(expenses)
     return render_template('index.html', expenses=expenses, notifications=notifications)
 
 if __name__ == '__main__':
-    init_db()
+    init_db()  # Recreate DB with new schema
     app.run(debug=True)
