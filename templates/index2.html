@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinTrack</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/remixicon@3.6.0/fonts/remixicon.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      :root {
+        --bg: #f5f7fa;
+        --text: #333;
+        --card-bg: #fff;
+        --shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        --shadow-hover: 0 15px 30px rgba(0, 0, 0, 0.1);
+        --accent-1: #6366f1;
+        --accent-2: #8b5cf6;
+        --accent-3: #0ea5e9;
+        --green: #10b981;
+        --red: #ef4444;
+        --yellow: #f59e0b;
+        --notification-bg: #fff8f8;
+        --notification-text: #ef4444;
+        --border-radius: 16px;
+        --card-border: 1px solid rgba(0, 0, 0, 0.05);
+      }
+      [data-theme="dark"] {
+        --bg: #0f172a;
+        --text: #e2e8f0;
+        --card-bg: #1e293b;
+        --shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        --shadow-hover: 0 15px 30px rgba(0, 0, 0, 0.3);
+        --notification-bg: rgba(239, 68, 68, 0.2);
+        --notification-text: #fca5a5;
+        --card-border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: var(--bg);
+        margin: 0;
+        padding: 0;
+        color: var(--text);
+        transition: background 0.3s, color 0.3s;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px 20px 80px;
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 40px;
+        padding-top: 20px;
+      }
+
+      .logo-area {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .logo {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 24px;
+        margin-bottom: 30px;
+      }
+
+      .card {
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        padding: 25px;
+        transition: all 0.3s;
+        border: var(--card-border);
+      }
+
+      .card:hover {
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-5px);
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .card-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+      }
+
+      .expense-form,
+      .budget-form {
+        display: grid;
+        gap: 15px;
+      }
+
+      .form-group {
+        position: relative;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 12px 15px;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        font-size: 14px;
+        background: var(--bg);
+        color: var(--text);
+        transition: all 0.3s;
+      }
+
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--accent-1);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+      }
+
+      .input-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+      }
+
+      .has-icon input {
+        padding-left: 40px;
+      }
+
+      button {
+        background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+      }
+
+      button.delete-btn {
+        background: var(--notification-bg);
+        color: var(--red);
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+
+      button.delete-btn:hover {
+        background: var(--red);
+        color: white;
+      }
+
+      .summary-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--card-bg);
+        padding: 20px;
+        border-radius: var(--border-radius);
+        margin-bottom: 10px;
+        transition: all 0.3s;
+        border: var(--card-border);
+      }
+
+      .summary-info h3 {
+        font-size: 16px;
+        margin-bottom: 5px;
+      }
+
+      .summary-info p {
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      .summary-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: white;
+      }
+
+      .icon-total {
+        background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      }
+
+      .icon-food {
+        background: linear-gradient(135deg, #f97316, #f59e0b);
+      }
+
+      .icon-transport {
+        background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+      }
+
+      .icon-entertainment {
+        background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+      }
+
+      .budget-progress {
+        margin-top: 15px;
+      }
+
+      .progress-bar {
+        height: 10px;
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+        border-radius: 5px;
+        transition: width 0.5s;
+      }
+
+      .progress-text {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 5px;
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.5);
+      }
+
+      [data-theme="dark"] .progress-text {
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      .expense-list {
+        list-style: none;
+        padding: 0;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .expense-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        margin-bottom: 10px;
+        background: var(--bg);
+        border-radius: 12px;
+        transition: all 0.3s;
+      }
+
+      .expense-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .expense-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(99, 102, 241, 0.1);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent-1);
+      }
+
+      .expense-details h4 {
+        font-size: 14px;
+        margin: 0;
+        font-weight: 500;
+      }
+
+      .expense-details p {
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.5);
+        margin: 0;
+      }
+
+      [data-theme="dark"] .expense-details p {
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      .expense-amount {
+        font-weight: 600;
+      }
+
+      .notification {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: var(--notification-bg);
+        color: var(--notification-text);
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 12px;
+        animation: slideIn 0.5s ease;
+      }
+
+      .notification-icon {
+        width: 30px;
+        height: 30px;
+        background: rgba(239, 68, 68, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--red);
+      }
+
+      .streak {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--green);
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 12px;
+        animation: slideIn 0.5s ease;
+      }
+
+      .streak-icon {
+        width: 30px;
+        height: 30px;
+        background: rgba(16, 185, 129, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .toggle-btn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: var(--card-bg);
+        box-shadow: var(--shadow);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: none;
+        color: var(--text);
+      }
+
+      .toggle-btn:hover {
+        transform: scale(1.1);
+      }
+
+      .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .chart-container {
+        width: 100%;
+        height: 300px;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .container {
+          padding: 20px;
+          padding-bottom: 80px;
+        }
+
+        .card {
+          padding: 20px;
+        }
+
+        .header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+
+        .summary-cards {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <button class="toggle-btn" onclick="toggleTheme()">
+      <i class="ri-moon-line" id="theme-icon"></i>
+    </button>
+
+    <div class="container">
+      <div class="header">
+        <div class="logo-area">
+          <div class="logo">
+            <i class="ri-money-dollar-circle-line"></i>
+          </div>
+          <h1>FinTrack</h1>
+        </div>
+      </div>
+
+      <div class="grid">
+        <!-- Expense Input -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Add New Expense</h2>
+          </div>
+          <form class="expense-form" method="POST">
+            <div class="form-group has-icon">
+              <i class="ri-money-rupee-circle-line input-icon"></i>
+              <input
+                type="number"
+                step="1"
+                name="amount"
+                placeholder="Amount (₹)"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <select
+                name="category"
+                id="category"
+                onchange="updateSubcategories()"
+                required
+              >
+                <option value="" disabled selected>Select Category</option>
+                <option value="Food">Food</option>
+                <option value="Transport">Transport</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Education">Education</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <select name="subcategory" id="subcategory" required>
+                <!-- Populated dynamically by JS -->
+              </select>
+            </div>
+            <div class="form-group">
+              <input
+                type="text"
+                name="description"
+                placeholder="Description"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <input type="date" name="date" required />
+            </div>
+            <button type="submit">
+              <i class="ri-add-line"></i> Add Expense
+            </button>
+          </form>
+        </div>
+
+        <!-- Budget Setting -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Budget Management</h2>
+          </div>
+          <form class="budget-form" method="POST">
+            <div class="form-group has-icon">
+              <i class="ri-wallet-3-line input-icon"></i>
+              <input
+                type="number"
+                step="0.01"
+                name="budget"
+                placeholder="Set Weekly Budget (₹)"
+                value="{{ budget if budget else '' }}"
+                required
+              />
+            </div>
+            <button type="submit">
+              <i class="ri-save-line"></i> Set Budget
+            </button>
+          </form>
+
+          {% if budget %}
+          <div class="budget-progress">
+            <div class="progress-text">
+              <span>Weekly spending</span>
+              <span>₹{{ weekly_summary.total }} / ₹{{ budget }}</span>
+            </div>
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                style="width: {{ (weekly_summary.total / budget) * 100 if budget > 0 else 0 }}%"
+              ></div>
+            </div>
+            <div class="progress-text">
+              <span
+                >{{ ((weekly_summary.total / budget) * 100)|round(1) if budget >
+                0 else 0 }}% of budget used</span
+              >
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Spending Summary -->
+      <h2 class="section-title">
+        <i class="ri-pie-chart-line"></i> Spending Summary
+      </h2>
+
+      <div class="grid">
+        <!-- Spending Graph -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Spending Breakdown</h2>
+          </div>
+          <div class="chart-container">
+            <canvas id="spendingChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Spending Trends -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Weekly Spending Trend</h2>
+          </div>
+          <div class="chart-container">
+            <canvas id="trendsChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top: 30px">
+        <!-- Weekly Summary -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Weekly Overview</h2>
+          </div>
+
+          <div class="summary-card">
+            <div class="summary-info">
+              <h3>Total Spent</h3>
+              <p>₹{{ weekly_summary.total }}</p>
+            </div>
+            <div class="summary-icon icon-total">
+              <i class="ri-money-rupee-circle-line"></i>
+            </div>
+          </div>
+
+          {% for category, amount in weekly_summary.by_category.items() %}
+          <div class="summary-card">
+            <div class="summary-info">
+              <h3>{{ category }}</h3>
+              <p>₹{{ amount }}</p>
+            </div>
+            <div class="summary-icon icon-{{ category.lower() }}">
+              <i
+                class="ri-{{ 'restaurant-line' if category == 'Food' else 'car-line' if category == 'Transport' else 'game-line' if category == 'Entertainment' else 'book-open-line' if category == 'Education' else 'money-dollar-circle-line' }}"
+              ></i>
+            </div>
+          </div>
+          {% endfor %} {% if savings_streak > 0 %}
+          <div class="streak">
+            <div class="streak-icon">
+              <i class="ri-fire-line"></i>
+            </div>
+            <div>
+              <strong
+                >{{ savings_streak }} week{% if savings_streak > 1 %}s{% endif
+                %} streak!</strong
+              >
+              <p>
+                {{ 'Great start—keep it up!' if savings_streak == 1 else
+                'You\'re on a roll!' if savings_streak == 2 else 'Amazing
+                discipline!' }}
+              </p>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Recent Expenses -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Recent Expenses</h2>
+          </div>
+          <ul class="expense-list">
+            {% for expense in expenses %}
+            <li class="expense-item">
+              <div class="expense-info">
+                <div class="expense-icon">
+                  <i
+                    class="ri-{{ 'restaurant-line' if expense[2] == 'Food' else 'car-line' if expense[2] == 'Transport' else 'game-line' if expense[2] == 'Entertainment' else 'book-open-line' if expense[2] == 'Education' else 'money-dollar-circle-line' }}"
+                  ></i>
+                </div>
+                <div class="expense-details">
+                  <h4>{{ expense[4] }}</h4>
+                  <p>{{ expense[2] }} - {{ expense[3] }} • {{ expense[5] }}</p>
+                </div>
+              </div>
+              <div class="expense-actions">
+                <span class="expense-amount">₹{{ expense[1] }}</span>
+                <form
+                  action="{{ url_for('delete', expense_id=expense[0]) }}"
+                  method="POST"
+                  style="display: inline; margin-left: 10px"
+                >
+                  <button type="submit" class="delete-btn">
+                    <i class="ri-delete-bin-line"></i>
+                  </button>
+                </form>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      {% if notifications %}
+      <h2 class="section-title" style="margin-top: 30px">
+        <i class="ri-notification-line"></i> Notifications
+      </h2>
+
+      {% for notification in notifications %}
+      <div class="notification">
+        <div class="notification-icon">
+          <i class="ri-alert-line"></i>
+        </div>
+        <div>{{ notification }}</div>
+      </div>
+      {% endfor %} {% endif %}
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+      const subcategoryOptions = {
+          "Food": ["Fast Food", "Groceries", "Dining Out", "Snacks"],
+          "Transport": ["Public Transport", "Rideshare", "Fuel"],
+          "Entertainment": ["Movies", "Games", "Events"],
+          "Education": ["Books", "Courses", "Supplies"],
+          "Other": ["Other"]
+      };
+
+      function updateSubcategories() {
+          const category = document.getElementById("category").value;
+          const subcategorySelect = document.getElementById("subcategory");
+          subcategorySelect.innerHTML = "";
+
+          // Add placeholder option
+          const placeholderOption = document.createElement("option");
+          placeholderOption.value = "";
+          placeholderOption.text = "Select Subcategory";
+          placeholderOption.disabled = true;
+          placeholderOption.selected = true;
+          subcategorySelect.appendChild(placeholderOption);
+
+          // Add subcategory options
+          subcategoryOptions[category].forEach(sub => {
+              const option = document.createElement("option");
+              option.value = sub;
+              option.text = sub;
+              subcategorySelect.appendChild(option);
+          });
+      }
+
+      function toggleTheme() {
+          const themeIcon = document.getElementById('theme-icon');
+          if (document.body.dataset.theme === "dark") {
+              document.body.dataset.theme = "";
+              themeIcon.classList.remove('ri-sun-line');
+              themeIcon.classList.add('ri-moon-line');
+          } else {
+              document.body.dataset.theme = "dark";
+              themeIcon.classList.remove('ri-moon-line');
+              themeIcon.classList.add('ri-sun-line');
+          }
+          localStorage.setItem("theme", document.body.dataset.theme);
+      }
+
+      window.onload = () => {
+          updateSubcategories();
+          const savedTheme = localStorage.getItem("theme");
+          if (savedTheme) {
+              document.body.dataset.theme = savedTheme;
+              const themeIcon = document.getElementById('theme-icon');
+              if (savedTheme === "dark") {
+                  themeIcon.classList.remove('ri-moon-line');
+                  themeIcon.classList.add('ri-sun-line');
+              }
+          }
+
+          // Animate elements on page load
+          document.querySelectorAll('.card').forEach((card, index) => {
+              card.style.animation = `fadeIn 0.5s ease forwards ${index * 0.1}s`;
+              card.style.opacity = '0';
+          });
+      };
+
+      // Pie Chart with better colors and animation
+      const expenses = {{ expenses|tojson }};
+      const categories = [...new Set(expenses.map(e => e[2] + ' - ' + e[3]))];
+      const amounts = categories.map(cat =>
+          expenses.filter(e => (e[2] + ' - ' + e[3]) === cat).reduce((sum, e) => sum + e[1], 0)
+      );
+
+      const chartColors = [
+          '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316',
+          '#eab308', '#22c55e', '#14b8a6', '#0ea5e9', '#6366f1'
+      ];
+
+      const ctx = document.getElementById('spendingChart').getContext('2d');
+      new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+              labels: categories,
+              datasets: [{
+                  data: amounts,
+                  backgroundColor: chartColors,
+                  borderWidth: 0,
+                  hoverOffset: 15
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              cutout: '65%',
+              plugins: {
+                  legend: {
+                      position: 'right',
+                      labels: {
+                          font: {
+                              family: 'Poppins'
+                          },
+                          usePointStyle: true,
+                          padding: 15
+                      }
+                  }
+              },
+              animation: {
+                  animateScale: true,
+                  animateRotate: true
+              }
+          }
+      });
+
+      // Line Chart for Spending Trends with better styling
+      const trends = {{ spending_trends|tojson }};
+      const trendLabels = Object.keys(trends);
+      const trendData = Object.values(trends);
+
+      const trendCtx = document.getElementById('trendsChart').getContext('2d');
+
+      // Create gradient for line chart
+      const gradient = trendCtx.createLinearGradient(0, 0, 0, 300);
+      gradient.addColorStop(0, 'rgba(99, 102, 241, 0.5)');
+      gradient.addColorStop(1, 'rgba(99, 102, 241, 0.0)');
+
+      new Chart(trendCtx, {
+          type: 'line',
+          data: {
+              labels: trendLabels,
+              datasets: [{
+                  label: 'Weekly Spending (₹)',
+                  data: trendData,
+                  borderColor: '#6366f1',
+                  backgroundColor: gradient,
+                  fill: true,
+                  tension: 0.3,
+                  pointBackgroundColor: '#6366f1',
+                  pointBorderColor: '#fff',
+                  pointBorderWidth: 2,
+                  pointRadius: 5,
+                  pointHoverRadius: 8
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                  y: {
+                      beginAtZero: true,
+                      grid: {
+                          display: true,
+                          drawBorder: false
+                      },
+                      ticks: {
+                          font: {
+                              family: 'Poppins'
+                          }
+                      }
+                  },
+                  x: {
+                      grid: {
+                          display: false
+                      },
+                      ticks: {
+                          font: {
+                              family: 'Poppins'
+                          }
+                      }
+                  }
+              },
+              plugins: {
+                  legend: {
+                      display: false
+                  }
+              },
+              interaction: {
+                  mode: 'index',
+                  intersect: false
+              },
+              animation: {
+                  duration: 2000
+              }
+          }
+      });
+    </script>
+  </body>
+</html>

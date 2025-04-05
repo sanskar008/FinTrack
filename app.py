@@ -66,7 +66,7 @@ def index():
     spending_trends = get_spending_trends(expenses)
     savings_streak = get_savings_streak(expenses, budget)
     
-    return render_template('index.html', expenses=expenses, notifications=notifications, 
+    return render_template('index2.html', expenses=expenses, notifications=notifications, 
                           weekly_summary=weekly_summary, budget=budget, 
                           spending_trends=spending_trends, savings_streak=savings_streak)
 
