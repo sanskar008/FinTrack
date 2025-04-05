@@ -3,6 +3,7 @@ from collections import Counter
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import make_pipeline
+from datetime import datetime, timedelta
 
 # Sample training data for fast food classification
 TRAINING_DATA = [
@@ -11,12 +12,10 @@ TRAINING_DATA = [
 ]
 X_train = [item for item, label in TRAINING_DATA]
 y_train = [label for item, label in TRAINING_DATA]
-
-# Train a simple Naive Bayes classifier
 model = make_pipeline(CountVectorizer(), MultinomialNB())
 model.fit(X_train, y_train)
 
-# Health data for fast food items (calories per typical serving, sodium in mg)
+# Health data for fast food items
 HEALTH_DATA = {
     "maggi": {"calories": 400, "sodium": 1500},
     "pizza": {"calories": 800, "sodium": 1200},
@@ -35,12 +34,10 @@ def get_health_warning(item, count):
     if item in HEALTH_DATA:
         total_calories = HEALTH_DATA[item]["calories"] * count
         total_sodium = HEALTH_DATA[item]["sodium"] * count
-        return (
-            f"That’s {total_calories} calories and {total_sodium}mg sodium—watch your health!"
-        )
+        return f"That’s {total_calories} calories and {total_sodium}mg sodium—watch your health!"
     return "Too much fast food isn’t great for you!"
 
-def analyze_spending(expenses):
+def analyze_spending(expenses, budget=None):
     if not expenses:
         return ["No expenses yet—start tracking!"]
     
@@ -48,6 +45,12 @@ def analyze_spending(expenses):
         df = pd.DataFrame(expenses, columns=['id', 'amount', 'category', 'subcategory', 'description', 'date'])
     except ValueError as e:
         return [f"Error processing data: {str(e)}. Please reset the database."]
+    
+    # Weekly total for budget check
+    today = datetime.now()
+    start_of_week = today - timedelta(days=today.weekday())
+    weekly_expenses = df[df['date'].apply(lambda x: datetime.strptime(x, '%Y-%m-%d') >= start_of_week)]
+    weekly_total = weekly_expenses['amount'].sum()
     
     fast_food_df = df[(df['category'] == 'Food') & (df['subcategory'] == 'Fast Food')]
     desc_counts = Counter(fast_food_df['description'].str.lower())
@@ -80,6 +83,13 @@ def analyze_spending(expenses):
                 f"You’ve spent on {desc.capitalize()} {count} times this week—watch out!"
             )
     
+    # Budget warnings
+    if budget is not None:
+        if weekly_total >= budget:
+            notifications.append(f"You’ve exceeded your weekly budget of ₹{budget}! Total: ₹{weekly_total}")
+        elif weekly_total >= budget * 0.8:
+            notifications.append(f"You’re at ₹{weekly_total}—close to your ₹{budget} budget!")
+
     return notifications if notifications else ["All good for now—keep tracking!"]
 
 if __name__ == "__main__":
@@ -91,4 +101,4 @@ if __name__ == "__main__":
         (5, 5.0, "Transport", "Public Transport", "Bus", "2025-04-05"),
         (6, 2.0, "Food", "Fast Food", "Burger", "2025-04-06")
     ]
-    print(analyze_spending(sample_expenses))
+    print(analyze_spending(sample_expenses, budget=10))
